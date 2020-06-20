@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.core.Amplify
 import com.eugene.mydemo.app.BaseActivity
 import com.eugene.mydemo.utils.start
@@ -101,6 +102,10 @@ class MainActivity : BaseActivity() {
 
         textViewUserSignUp.setOnClickListener {
             startForResult<RegisterActivity>(1)
+        }
+
+        tvFacebook.setOnClickListener {
+            start<FaceBookActivity>()
         }
     }
 

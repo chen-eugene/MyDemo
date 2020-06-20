@@ -155,6 +155,19 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
+        android:id="@+id/tvFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/space6"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:text="facebook"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/button_default"
+        android:textSize="15dp" />
+
+
+    <TextView
         android:id="@+id/textViewUserSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

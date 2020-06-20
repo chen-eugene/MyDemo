@@ -3,16 +3,15 @@ package com.eugene.mydemo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.amplifyframework.core.Amplify
 import com.eugene.mydemo.adapter.VideoAdapter
+import com.eugene.mydemo.app.BaseActivity
 import com.eugene.mydemo.utils.start
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.activity_home.toolbar
-import kotlinx.android.synthetic.main.activity_video_detail.*
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity() {
 
     private val videos = listOf<Pair<Int, String>>(
         Pair(
@@ -52,7 +51,18 @@ class HomeActivity : AppCompatActivity() {
         initView()
 
         tvLogOut.setOnClickListener {
-
+            showWaitDialog("Log out ...")
+            Amplify.Auth.signOut(
+                {
+                    closeWaitDialog()
+                    start<MainActivity>()
+                    finish()
+                },
+                { error ->
+                    closeWaitDialog()
+                    showDialogMessage("log out failed", error.message ?: "", null)
+                }
+            )
         }
     }
 
@@ -81,7 +91,7 @@ class HomeActivity : AppCompatActivity() {
                     vh?.videoView?.start()
                     vh?.ivFrame?.visibility = View.GONE
                     lastVH = vh
-                    Log.i("HomeActivity","position-->${position}")
+                    Log.i("HomeActivity", "position-->${position}")
                 }
             }
 
@@ -91,7 +101,7 @@ class HomeActivity : AppCompatActivity() {
                     if (Math.abs(dy) >= mMinScrollDistance) {
                         lastVH?.videoView?.stopPlayback()
                         lastVH?.ivFrame?.visibility = View.VISIBLE
-                        Log.i("HomeActivity","onScrolled")
+                        Log.i("HomeActivity", "onScrolled")
                     }
                 }
             }

@@ -19,6 +19,11 @@ class RegisterActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        username = intent.getStringExtra("username") ?: ""
+        editTextRegUserId.setText(username)
+
+
         initView()
     }
 
@@ -124,7 +129,7 @@ class RegisterActivity : BaseActivity() {
             username,
             pwd,
             AuthSignUpOptions.builder()
-                .userAttribute(AuthUserAttributeKey.email(), "eugene.chen3.14@gmail.com").build(),
+                .userAttribute(AuthUserAttributeKey.email(), email).build(),
             { result ->
                 closeWaitDialog()
                 if (result.isSignUpComplete) {
@@ -137,7 +142,7 @@ class RegisterActivity : BaseActivity() {
             },
             { error ->
                 closeWaitDialog()
-                showDialogMessage("Sign up failed", error.message ?: "", null)
+                showDialogMessage("Sign up failed", error.cause?.message ?: "", null)
             }
         )
 

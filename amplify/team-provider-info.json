@@ -13,7 +13,9 @@
         },
         "categories": {
             "auth": {
-                "mydemoadbe2569": {}
+                "mydemoadbe2569": {
+                    "hostedUIProviderCreds": "[]"
+                }
             }
         }
     }

@@ -11,9 +11,14 @@ import com.amplifyframework.core.Amplify
 
 class MyApplication : Application(){
 
+    companion object {
+        var instance: MyApplication? = null
+    }
 
     override fun onCreate() {
         super.onCreate()
+
+        instance = this
 
         AWSMobileClient.getInstance().initialize(applicationContext, object :
             Callback<UserStateDetails> {
@@ -34,5 +39,6 @@ class MyApplication : Application(){
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
     }
+
 
 }

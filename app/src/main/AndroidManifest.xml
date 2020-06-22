@@ -17,25 +17,25 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".SignUpConfirmActivity" />
-        <activity android:name=".VideoDetailActivity" />
-        <activity
-            android:name=".FaceBookActivity"
-            android:launchMode="singleInstance">
+        <activity android:name=".VideoDetailActivity">
 
+        </activity>
+        <activity android:name=".FacebookActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="myapp" />
+                <data android:scheme="maji" />
             </intent-filter>
-
         </activity>
     </application>
 

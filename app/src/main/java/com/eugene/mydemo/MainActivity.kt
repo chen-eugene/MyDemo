@@ -6,16 +6,28 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import com.amplifyframework.auth.AuthProvider
+import android.widget.Toast
+import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException
 import com.amplifyframework.core.Amplify
 import com.eugene.mydemo.app.BaseActivity
+import com.eugene.mydemo.utils.SPUtil
 import com.eugene.mydemo.utils.start
 import com.eugene.mydemo.utils.startForResult
 import kotlinx.android.synthetic.main.activity_main.*
 
+const val HAS_SIGN_IN = "HAS_SIGN_IN"
+
 class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val signIn = SPUtil.get<Boolean>(HAS_SIGN_IN, false)
+
+        if (signIn) {
+            start<HomeActivity>()
+            finish()
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -24,38 +36,16 @@ class MainActivity : BaseActivity() {
             { error -> Log.e("AmplifyQuickstart", error.toString()) }
         )
 
-//        Amplify.Auth.signUp(
-//            "eugene.chen3.14@gmail.com",
-//            "123456789",
-//            AuthSignUpOptions.builder().userAttribute(AuthUserAttributeKey.email(), "eugene.chen3.14@gmail.com").build(),
-//            { result -> Log.i("AuthQuickStart", "Result: $result") },
-//            { error -> Log.e("AuthQuickStart", "Sign up failed", error) }
-//        )
-
-//        Amplify.Auth.confirmSignUp(
-//            "eugene.chen3.14@gmail.com",
-//            "864401",
-//            { result -> Log.i("AuthQuickstart", if (result.isSignUpComplete) "Confirm signUp succeeded" else "Confirm sign up not complete") },
-//            { error -> Log.e("AuthQuickstart", error.toString()) }
-//        )
-
-//        Amplify.Auth.signIn(
-//            "eugene.chen3.14@gmail.com",
-//            "123456789",
-//            { result -> Log.i("AuthQuickstart", if (result.isSignInComplete) "Sign in succeeded" else "Sign in not complete") },
-//            { error -> Log.e("AuthQuickstart", error.toString()) }
-//        )
-
         initView()
     }
 
 
-    private fun initView(){
+    private fun initView() {
 
-        editTextUserId.addTextChangedListener(object :TextWatcher{
+        editTextUserId.addTextChangedListener(object : TextWatcher {
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length == 0){
+                if (p0?.length == 0) {
                     textViewUserIdLabel.setText(R.string.Username)
                     editTextUserId.setBackgroundResource(R.drawable.text_border_selector)
                 }
@@ -66,17 +56,17 @@ class MainActivity : BaseActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                if (p0?.length == 0){
+                if (p0?.length == 0) {
                     textViewUserIdLabel.text = ""
                 }
             }
 
         })
 
-        editTextUserPassword.addTextChangedListener(object :TextWatcher{
+        editTextUserPassword.addTextChangedListener(object : TextWatcher {
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0?.length == 0){
+                if (p0?.length == 0) {
                     textViewUserPasswordLabel.setText(R.string.Username)
                     editTextUserPassword.setBackgroundResource(R.drawable.text_border_selector)
                 }
@@ -87,7 +77,7 @@ class MainActivity : BaseActivity() {
             }
 
             override fun afterTextChanged(p0: Editable?) {
-                if (p0?.length == 0){
+                if (p0?.length == 0) {
                     textViewUserPasswordLabel.text = ""
                 }
             }
@@ -105,19 +95,28 @@ class MainActivity : BaseActivity() {
         }
 
         tvFacebook.setOnClickListener {
-            start<FaceBookActivity>()
+            start<FacebookActivity>()
+//            Amplify.Auth.signInWithSocialWebUI(
+//                AuthProvider.facebook(),
+//                this,
+//                { result ->
+//                    start<HomeActivity>()
+//                    finish()
+//                },
+//                { error -> Log.e("AuthQuickstart", error.toString()) }
+//            )
         }
     }
 
-    private fun signIn(){
+    private fun signIn() {
         val username = editTextUserId.text.toString()
-        if (username.isNullOrBlank()){
+        if (username.isNullOrBlank()) {
             editTextUserId.setBackgroundResource(R.drawable.text_border_error)
             return
         }
 
         val pwd = editTextUserPassword.text.toString()
-        if (pwd.isNullOrBlank()){
+        if (pwd.isNullOrBlank()) {
             editTextUserPassword.setBackgroundResource(R.drawable.text_border_error)
             return
         }
@@ -128,12 +127,27 @@ class MainActivity : BaseActivity() {
             username,
             pwd,
             { result ->
-                closeWaitDialog()
-                start<HomeActivity>()
-                finish()
+                if (result.isSignInComplete) {
+                    SPUtil.put(HAS_SIGN_IN, true)
+                    closeWaitDialog()
+                    start<HomeActivity>()
+                    finish()
+                } else {
+                    startForResult<SignUpConfirmActivity>(2)
+                }
+
             },
             { error ->
                 closeWaitDialog()
+
+                val e = error.cause
+
+                if (e is UserNotConfirmedException) {
+                    showDialogMessage("Sign-in failed",e.errorMessage) {
+                        startForResult<SignUpConfirmActivity>(2, Pair("username", username))
+                    }
+                }
+
                 textViewUserIdMessage.text = "Sign-in failed"
                 editTextUserPassword.background = getDrawable(R.drawable.text_border_error)
 
@@ -147,25 +161,25 @@ class MainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode){
+        when (requestCode) {
             // Register user
-            1 ->{
-                if (resultCode == Activity.RESULT_OK){
+            1 -> {
+                if (resultCode == Activity.RESULT_OK) {
                     val username = data?.getStringExtra("username")
-                    if (!username.isNullOrBlank()){
+                    if (!username.isNullOrBlank()) {
                         editTextUserId.setText(username)
                     }
                     val pwd = data?.getStringExtra("password")
-                    if (!pwd.isNullOrBlank()){
+                    if (!pwd.isNullOrBlank()) {
                         editTextUserPassword.setText(pwd)
                     }
                 }
             }
             // Confirm register user
-            2 ->{
-                if (resultCode == Activity.RESULT_OK){
+            2 -> {
+                if (resultCode == Activity.RESULT_OK) {
                     val username = data?.getStringExtra("username")
-                    if (!username.isNullOrBlank()){
+                    if (!username.isNullOrBlank()) {
                         editTextUserId.setText(username)
                     }
                 }

@@ -6,25 +6,29 @@ import android.util.Log
 import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.core.Amplify
 import com.eugene.mydemo.app.BaseActivity
+import com.eugene.mydemo.utils.start
 
-class FaceBookActivity : BaseActivity(){
+class FacebookActivity : BaseActivity(){
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        Amplify.Auth.signInWithSocialWebUI(
-            AuthProvider.facebook(),
-            this,
-            { result -> Log.i("AuthQuickstart", result.toString()) },
-            { error -> Log.e("AuthQuickstart", error.toString()) }
-        )
-    }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if(intent?.scheme != null && "myapp" == intent.scheme) {
+        if(intent?.scheme != null && "maji".equals(intent?.scheme)) {
             Amplify.Auth.handleWebUISignInResponse(intent)
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Amplify.Auth.signInWithSocialWebUI(
+            AuthProvider.facebook(),
+            this,
+            { result ->
+                start<HomeActivity>()
+                finish()
+            },
+            { error -> Log.e("AuthQuickstart", error.toString()) }
+        )
     }
 
 

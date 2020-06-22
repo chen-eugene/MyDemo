@@ -19,11 +19,13 @@ class SignUpConfirmActivity : BaseActivity() {
         toolbar.setTitle("")
         setSupportActionBar(toolbar)
 
-
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         toolbar.setNavigationOnClickListener(View.OnClickListener { onBackPressed() })
+
+        userName = intent.getStringExtra("username") ?: ""
+        editTextConfirmUserId.setText(userName)
 
         initView()
     }

@@ -8,12 +8,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amplifyframework.core.Amplify
 import com.eugene.mydemo.adapter.VideoAdapter
 import com.eugene.mydemo.app.BaseActivity
+import com.eugene.mydemo.utils.SPUtil
 import com.eugene.mydemo.utils.start
 import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : BaseActivity() {
 
     private val videos = listOf<Pair<Int, String>>(
+        Pair(
+            R.mipmap.frame,
+            "https://d3ngi64t7aakaf.cloudfront.net/ecea0248-72c2-4c26-a0d7-fa45fefb4653/hls/8A2E394C-008F-48C4-9EBD-47D16BA54E5C.m3u8"
+        ),
+        Pair(
+            R.mipmap.frame,
+            "https://d3ngi64t7aakaf.cloudfront.net/ecea0248-72c2-4c26-a0d7-fa45fefb4653/hls/8A2E394C-008F-48C4-9EBD-47D16BA54E5C.m3u8"
+        ),
         Pair(
             R.mipmap.frame,
             "https://d3ngi64t7aakaf.cloudfront.net/ecea0248-72c2-4c26-a0d7-fa45fefb4653/hls/8A2E394C-008F-48C4-9EBD-47D16BA54E5C.m3u8"
@@ -55,6 +64,7 @@ class HomeActivity : BaseActivity() {
             Amplify.Auth.signOut(
                 {
                     closeWaitDialog()
+                    SPUtil.clear()
                     start<MainActivity>()
                     finish()
                 },
